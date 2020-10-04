@@ -27,21 +27,30 @@ class Bot():
       if mention.id in IDS:
         continue
       IDS.append(mention.id)
-      reply = []
-      for media in mention._json['extended_entities']['media']:
-        variants = media['video_info']['variants']
-        for variant in variants:
-          pass
-          # print(variant)
-        url = variants[-1]['url']
-        reply.append(url)
+      mention = mention._json
       try:
-        self.api.create_favorite(mention.id)
-        self.api.update_status(
-            "\n".join(reply), in_reply_to_status_id=mention.id)
+        status_id = mention['in_reply_to_status_id']
+        print(status_id)
+        status = self.api.get_status(status_id)._json
+        reply = [f"@{mention['user']['screen_name']}"]
+        for media in status['extended_entities']['media']:
+          variants = media['video_info']['variants']
+          reply.append(variants[-1]['url'])
+        print(reply)
+        try:
+          # self.api.create_favorite(mention['id'])
+          self.api.update_status(
+              status="\n".join(reply), in_reply_to_status_id=mention['id'], auto_populate_reply_metadata=True)
+        except Exception as e:
+          print(e)
       except Exception as e:
         print(e)
-      # print(reply)
+        try:
+          # self.api.create_favorite(mention['id'])
+          self.api.update_status(
+              status=reply + " NO VIDEO FOUND", in_reply_to_status_id=mention['id'], auto_populate_reply_metadata=True)
+        except Exception as e:
+          print(e)
 
 
 def server():
