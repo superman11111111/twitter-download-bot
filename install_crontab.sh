@@ -1,1 +1,3 @@
-echo "@reboot cd ${pwd} && ./start.sh >/dev/null 2>&1" > /etc/cron.d/start_twitter_bot 
+name="twitterdl"
+echo "@reboot ${USER} cd ${PWD} && ./start.sh >/dev/null 2>&1" > /etc/cron.d/reboot_$name
+
